@@ -39,9 +39,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
-<<<<<<< HEAD
         final DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
-        //HERE IS THE ERROR
         Runnable runnable = new Runnable() {
  		public void run() {
                 Book book = new Book();
@@ -55,26 +53,6 @@ public class MainActivity extends AppCompatActivity {
  	};
         Thread mythread = new Thread(runnable);
         mythread.start();
-
-
-        //HERE IS THE ERROR
-=======
-        DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
-	Runnable runnable = new Runnable() {
-		public void run() {
-			Book book = new Book();
-			book.setTitle("Great Expectations");
-			book.setAuthor("Charles Dickens");
-			book.setPrice(1299);
-			book.setIsbn("1234567890");
-			book.setHardCover(false);
-			mapper.save(book);
-		}
-	};
-	Thread mythread = new Thread(runnable);
-	mythread.start();
-
->>>>>>> d9dc80872a883e1db91a7a4e2e954f28269efeaf
     }
 
     @Override
