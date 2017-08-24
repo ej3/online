@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
                 getApplicationContext(),
                 "us-east-2:1b253ff6-23ec-4ea3-94b3-6112a762837a", // Identity pool ID
-                Regions.US_EAST_1 // Region
+                Regions.US_EAST_2 // Region
         );
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -39,15 +39,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
-        DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+        final DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
         //HERE IS THE ERROR
-        Book book = new Book();
-        book.setTitle("Great Expectations");
-        book.setAuthor("Charles Dickens");
-        book.setPrice(1299);
-        book.setIsbn("1234567890");
-        book.setHardCover(false);
-        mapper.save(book);
+        Runnable runnable = new Runnable() {
+ 		public void run() {
+                Book book = new Book();
+                book.setTitle("Great Expectations");
+                book.setAuthor("Charles Dickens");
+                book.setPrice(1299);
+                book.setIsbn("1234567890");
+                book.setHardCover(false);
+                mapper.save(book);
+            }
+ 	};
+        Thread mythread = new Thread(runnable);
+        mythread.start();
+
+
         //HERE IS THE ERROR
     }
 
