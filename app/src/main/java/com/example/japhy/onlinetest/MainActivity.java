@@ -14,10 +14,17 @@ import com.amazonaws.services.dynamodbv2.*;
 import com.amazonaws.mobileconnectors.dynamodbv2.dynamodbmapper.*;
 import com.amazonaws.services.dynamodbv2.model.*;
 
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Initialize the Amazon Cognito credentials provider
+        CognitoCachingCredentialsProvider credentialsProvider = new CognitoCachingCredentialsProvider(
+                getApplicationContext(),
+                "us-east-2:1b253ff6-23ec-4ea3-94b3-6112a762837a", // Identity pool ID
+                Regions.US_EAST_1 // Region
+        );
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -31,6 +38,17 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+        AmazonDynamoDBClient ddbClient = new AmazonDynamoDBClient(credentialsProvider);
+        DynamoDBMapper mapper = new DynamoDBMapper(ddbClient);
+        //HERE IS THE ERROR
+        Book book = new Book();
+        book.setTitle("Great Expectations");
+        book.setAuthor("Charles Dickens");
+        book.setPrice(1299);
+        book.setIsbn("1234567890");
+        book.setHardCover(false);
+        mapper.save(book);
+        //HERE IS THE ERROR
     }
 
     @Override
@@ -53,5 +71,58 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    @DynamoDBTable(tableName = "Books")
+    public class Book {
+        private String title;
+        private String author;
+        private int price;
+        private String isbn;
+        private Boolean hardCover;
+
+        @DynamoDBIndexRangeKey(attributeName = "Title")
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        @DynamoDBIndexHashKey(attributeName = "Author")
+        public String getAuthor() {
+            return author;
+        }
+
+        public void setAuthor(String author) {
+            this.author = author;
+        }
+
+        @DynamoDBAttribute(attributeName = "Price")
+        public int getPrice() {
+            return price;
+        }
+
+        public void setPrice(int price) {
+            this.price = price;
+        }
+
+        @DynamoDBHashKey(attributeName = "ISBN")
+        public String getIsbn() {
+            return isbn;
+        }
+
+        public void setIsbn(String isbn) {
+            this.isbn = isbn;
+        }
+
+        @DynamoDBAttribute(attributeName = "Hardcover")
+        public Boolean getHardCover() {
+            return hardCover;
+        }
+
+        public void setHardCover(Boolean hardCover) {
+            this.hardCover = hardCover;
+        }
     }
 }
